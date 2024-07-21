@@ -5,6 +5,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,13 @@ import pojo.Book;
 
 public class JsonParseMethods<T> {
 
+//******************************************************************
+//different methods and approaches for parsing and extractin certain
+//property from jsonarrays,objects etc... 
+//The methods are reusable and tested with every datatype.
+
+	
+	
 //using JsonPath Class
 	public List<T> jsonParse_0(Response resp, String query) {
 
@@ -71,28 +79,28 @@ public class JsonParseMethods<T> {
 		JSONArray jsonArray = new JSONArray(resp.body().asString());
 
 		for (int a = 0; a < jsonArray.length(); a++) {
-			if (type == "text") {
+			if (type == E.TEXT.value) {
 				JSONObject object = jsonArray.getJSONObject(a);
 				result.add((T) object.getString(query));
-			} else if (type == "number") {
+			} else if (type == E.INTEGER_VALUE.value) {
 				JSONObject object = jsonArray.getJSONObject(a);
 				Integer i = object.getInt(query);
 				result.add((T) i);
-			} else if (type == "bolean") {
+			} else if (type == E.BOOLEAN_VALUE.value) {
 				JSONObject object = jsonArray.getJSONObject(a);
 				Boolean i = object.getBoolean(query);
 				result.add((T) i);
-			} else if (type == "list") {
+			} else if (type == E.LIST_VALUE.value) {
 				JSONObject object = jsonArray.getJSONObject(a);
 				JSONArray json = object.getJSONArray(query);
 				result.add((T) json);
 			}
 		}
-		if (type == "list") {
+		if (type == E.LIST_VALUE.value) {
 			for (int q = 0; q < result.size(); q++) {
 				JSONArray j = (JSONArray) result.get(q);
 				for (int w = 0; w < j.length(); w++) {
-					Object o = j.get(0);
+					Object o = j.get(w);
 					resultAsList.add(o);
 				}
 			}
@@ -120,18 +128,22 @@ public class JsonParseMethods<T> {
 		return result;
 	}
 
-
-//need repar, not working always ****************************
-	public List<T> jsonParse_4(Response resp, String query) {
+	public List<T> jsonParse4(Response resp, String value)
+			throws JSONException, JsonMappingException, JsonProcessingException {
 
 		List<T> result = new ArrayList<>();
-		String body = resp.body().asString();
-		T[] bodyArr = (T[]) body.split("" + query + "\": ");
+		JSONArray jar = new JSONArray(resp.body().asString());
+		for (int a = 0; a < jar.length(); a++) {
+			JSONObject job = jar.getJSONObject(a);
+			HashMap<String, Object> map = new ObjectMapper().readValue(job.toString(), HashMap.class);
+			result.add((T) map.get(value));
 
-		bodyArr = Arrays.copyOfRange(bodyArr, 1, bodyArr.length);
-		for (T s : bodyArr) {
-			String s1 = ((String) s).substring(1, 15).replaceAll("[^0-9]", "");
-			result.add((T) s1);
+		}
+		if (result.get(0) instanceof List) {
+			List<List> result1 = (List<List>) result;
+			List<Object> result2 = new ArrayList<>();
+			result1.forEach(result2::addAll);
+			result = (List<T>) result2;
 		}
 
 		return result;
