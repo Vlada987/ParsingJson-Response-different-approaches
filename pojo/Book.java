@@ -1,13 +1,13 @@
 package pojo;
 
-public class Book<T> {
+public class Book {
 
-	public T id;
-	public T name;
-	public T type;
-	public T available;
+	int id;
+	String name;
+	String type;
+	boolean available;
 
-	public Book(T id, T name, T type, T available) {
+	public Book(int id, String name, String type, boolean available) {
 
 		this.id = id;
 		this.name = name;
@@ -15,35 +15,35 @@ public class Book<T> {
 		this.available = available;
 	}
 
-	public T getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(T id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
-	public T getName() {
+	public String getName() {
 		return name;
 	}
 
-	public void setName(T name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
-	public T getType() {
+	public String getType() {
 		return type;
 	}
 
-	public void setType(T type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 
-	public T isAvailable() {
+	public boolean isAvailable() {
 		return available;
 	}
 
-	public void setAvailable(T available) {
+	public void setAvailable(boolean available) {
 		this.available = available;
 	}
 
